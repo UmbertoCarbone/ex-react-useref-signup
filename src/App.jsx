@@ -1,13 +1,20 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 
 function App() {
   //Stati per il form
-  const [fullName, setFullName] = useState("");
+  //campi controllati
+  const [descrizione, setDescrizione] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  //campi non controlalti
+  /*  const [fullName, setFullName] = useState("");
   const [specializzazione, setSpecializzazione] = useState("");
-  const [esperienza, setEsperienza] = useState("");
-  const [descrizione, setDescrizione] = useState("");
+  const [esperienza, setEsperienza] = useState(""); */
+  // TODO: USEREF
+  const fullNameRef = useRef();
+  const specializzazioneRef = useRef();
+  const esperienzaRef = useRef();
 
   const letters = "abcdefghijklmnopqrstuvwxyz";
   const numbers = "0123456789";
@@ -41,22 +48,27 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // valori non controllati
+    const fullName = fullNameRef.current.value;
+    const specializzazione = specializzazioneRef.current.value;
+    const esperienza = esperienzaRef.current.value;
     if (
       !fullName.trim() ||
       !username.trim() ||
       !password.trim() ||
       !specializzazione.trim() ||
       !esperienza.trim() ||
-      !descrizione.trim() 
+      !descrizione.trim()
     ) {
       alert("Compila tutti i campi");
       return;
     }
-    if(
-       !isUsernameValid ||
-      !isPasswordValid ||
-      !isDescriptionValid
-    ){alert("I CAMPI SONO ERRATI")
+    if (Number(esperienza) <= 0) {
+      alert("Gli anni di esperienza devono essere un numero positivo");
+      return;
+    }
+    if (!isUsernameValid || !isPasswordValid || !isDescriptionValid) {
+      alert("I CAMPI SONO ERRATI");
       return;
     }
     console.log("Dati del form compilati", {
@@ -78,11 +90,7 @@ function App() {
         {/* Nome completo */}
         <label>
           <p>Nome Completo</p>
-          <input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-          />
+          <input type="text" ref={fullNameRef} />
         </label>
 
         {/* Username */}
@@ -118,10 +126,7 @@ function App() {
         {/* Specializzazione */}
         <label>
           <p>Specializzazione</p>
-          <select
-            value={specializzazione}
-            onChange={(e) => setSpecializzazione(e.target.value)}
-          >
+          <select ref={specializzazioneRef}>
             <option value="">Seleziona</option>
             <option value="Full Stack">Full Stack</option>
             <option value="Frontend">Frontend</option>
@@ -134,8 +139,10 @@ function App() {
           <p>Anni di Esperienza</p>
           <input
             type="number"
-            value={esperienza}
-            onChange={(e) => setEsperienza(e.target.value)}
+            ref={esperienzaRef}
+            min="0" // Non permette valori negativi
+            max="99" // Limite massimo (opzionale)
+            step="1"
           />
         </label>
 
